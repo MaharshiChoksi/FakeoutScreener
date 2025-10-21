@@ -1,0 +1,7 @@
+*Screener1.0
+.env
+.logs
+*logs
+*.logs
+*.streamlit
+*DataUpdate
