@@ -4,7 +4,6 @@ from pathlib import Path
 from datetime import datetime
 import pytz
 import sys
-sys.path.append(str(Path(__file__).parents[2] / "backend"))
 import DataFetching as df
 
 st.set_page_config(page_title="Stock Screener", layout="wide")
