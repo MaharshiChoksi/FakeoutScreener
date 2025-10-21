@@ -134,17 +134,20 @@ with tab_screener:
             results_df = None
             try:
                 with st.spinner("Fetching data from Database based on filters..."):
-                    data = df.fetch_ohlc_from_db()
-                    monthly_df = data["monthly"]
-                    weekly_df = data["weekly"]
-
-                    movers = df.compute_monthly_movers(monthly_df, monthly_threshold)
-                    results_df = df.filter_weekly(weekly_df, movers, signal_type)
+                    dailydf = df.fetch_dailydata_from_db()
+                    if dailydf.empty or dailydf is None:
+                        raise ValueError("No daily data fetched from database.")
+                    
+                    monthly_df = df.compute_monthly_movers_df(dailydf, monthly_threshold) # Get Monthly DF and filter stocks
+                    prev_week_df = df.compute_prev_week_df(dailydf) # Get Prev weekly DF
+                    curr_week_df = df.compute_curr_week_df(dailydf) # Get Current week DF
+                    
+                    results_df = df.find_eligible_tickers(monthly_df, prev_week_df, curr_week_df, signal_type)
+                    print(results_df)
             except Exception as e:
                 status.error(f"Data fetch/processing failed: {e}", icon="❌")
                 results_df = None
             finally:
-                # re-enable the Apply Filters button
                 st.session_state['processing'] = False
                 # store last results in session_state to display after rerun
                 st.session_state['_last_results'] = results_df
@@ -153,17 +156,15 @@ with tab_screener:
                     "signal_type": signal_type,
                 }
 
-        if '_last_results' in st.session_state:
-            results_df = st.session_state.pop('_last_results')
-            last_filters = st.session_state.pop('_last_filters', {})
+            # display outcome immediately (replace status message)
             if results_df is None:
-                st.error("Processing failed, No symbols matched the filters.", icon="❌")
+                status.warning("Processing failed. Try again.", icon="⚠️")
             elif results_df.empty:
-                st.warning("No symbols matched the filters.", icon="⚠️")
+                status.warning("Processing completed - no matching symbols found.", icon="✅")
             else:
-                st.success(f"Done — {len(results_df)} symbols matched.", icon="✅")
-                st.dataframe(results_df, use_container_width=True)
+                status.success(f"Done — {len(results_df)} symbols matched.", icon="✅")
                 csv_data = results_df.to_csv(index=False)
                 st.download_button("Export CSV", data=csv_data, file_name="screener_export.csv", mime="text/csv")
-        else:
-            st.info("Set filters and click 'Apply Filters' to run the screener.")
+                st.dataframe(results_df, width="stretch")
+    else:
+        st.info("Set filters and click 'Apply Filters' to run the screener.")
