@@ -1,0 +1,9 @@
+*Screener1.0
+.env
+.logs
+*logs
+*.logs
+*.streamlit
+*DataUpdate
+*backend
+*StocksData
