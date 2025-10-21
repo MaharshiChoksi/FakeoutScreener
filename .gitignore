@@ -7,3 +7,5 @@
 *DataUpdate
 *backend
 *StocksData
+*/**/__pycache__
+*DBUpdateScheduler.ps1
