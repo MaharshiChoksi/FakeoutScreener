@@ -3,7 +3,6 @@ import base64
 from pathlib import Path
 from datetime import datetime
 import pytz
-import sys
 import DataFetching as df
 
 st.set_page_config(page_title="Stock Screener", layout="wide")
