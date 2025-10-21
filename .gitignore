@@ -5,3 +5,5 @@
 *.logs
 *.streamlit
 *DataUpdate
+*backend
+*StocksData
