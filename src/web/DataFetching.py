@@ -14,7 +14,7 @@ def _get_db_engine():
             raise RuntimeError("CockroachDB URI not found. Set st.secrets['DATABASE_URL'] or env DATABASE_URL.")
         engine = psycopg2.connect(uri)
     except Exception as e:
-        st.error("Database Connection error: {e}")
+        st.error(f"Database Connection error: {e}")
     return engine
 
 # helper: previous month range
