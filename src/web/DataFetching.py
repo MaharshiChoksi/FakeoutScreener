@@ -6,7 +6,8 @@ import streamlit as st
 import logging
 import pytz
 
-streamlit_root_logger = logging.getLogger("streamlit")
+logging.basicConfig(level=logging.INFO)
+
 # DB engine provider (expects connection string in Streamlit secrets or env var)
 def _get_db_engine():
     # prefer Streamlit secrets, fallback to environment variables
@@ -14,7 +15,7 @@ def _get_db_engine():
     if not uri:
         raise RuntimeError("CockroachDB URI not found. Set st.secrets['DATABASE_URL'] or env DATABASE_URL.")
     engine = psycopg2.connect(uri)
-    streamlit_root_logger.info("Database connection established.")
+    logging.info("Database connection established.")
     return engine
 
 # helper: previous month range
@@ -41,7 +42,7 @@ def fetch_dailydata_from_db() -> pd.DataFrame:
     rows = cur.fetchall()
     cols = [desc[0] for desc in cur.description]
     df = pd.DataFrame(rows, columns=cols)
-    streamlit_root_logger.info(f"Fetched {len(df)} rows from dailydata table.")
+    logging.info(f"Fetched {len(df)} rows from dailydata table.")
     return df
 
 
@@ -94,7 +95,7 @@ def compute_monthly_movers_df(daily_df: pd.DataFrame, monthly_threshold: float) 
 
     # sort for deterministic order
     monthly_df = monthly_df.sort_values("symbol").reset_index(drop=True)
-    streamlit_root_logger.info(f"Computed monthly movers df with {len(monthly_df)} rows meeting threshold {monthly_threshold}%.")
+    logging.info(f"Computed monthly movers df with {len(monthly_df)} rows meeting threshold {monthly_threshold}%.")
     return monthly_df
 
 
@@ -145,7 +146,7 @@ def compute_prev_week_df(daily_df: pd.DataFrame) -> pd.DataFrame:
         "symbol", "date", "open", "high", "low", "close", "volume"
     ])
     weekly_df = weekly_df.sort_values("symbol").reset_index(drop=True)
-    streamlit_root_logger.info(f"Computed previous week df with {len(weekly_df)} rows.")
+    logging.info(f"Computed previous week df with {len(weekly_df)} rows.")
     return weekly_df
 
 
@@ -251,5 +252,5 @@ def find_eligible_tickers(monthly_df: pd.DataFrame, prev_week_df: pd.DataFrame, 
             "symbol", "date", "open", "high", "low", "close", "volume", "Opportunity", "% Change Prev Month"
         ])
     
-    streamlit_root_logger.info(f"Found {len(eligible_stocks)} eligible stocks for signal type '{signal_type}'.")
+    logging.info(f"Found {len(eligible_stocks)} eligible stocks for signal type '{signal_type}'.")
     return eligible_stocks
