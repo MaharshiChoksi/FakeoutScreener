@@ -4,17 +4,23 @@ from datetime import datetime
 import pandas as pd
 import streamlit as st
 import pytz
+from dotenv import load_dotenv
+import os
 
+load_dotenv('.env')
 # DB engine provider (expects connection string in Streamlit secrets or env var)
 def _get_db_engine():
     try:
-        # prefer Streamlit secrets, fallback to environment variables
-        uri = st.secrets.get("DATABASE_URL")
-        if not uri:
-            raise RuntimeError("CockroachDB URI not found. Set st.secrets['DATABASE_URL'] or env DATABASE_URL.")
-        engine = psycopg2.connect(uri)
+        dbname = st.secrets.get("DB_NAME")
+        user = st.secrets.get("USER")
+        password = st.secrets.get("PASSWORD")
+        host = st.secrets.get("HOST")
+        port = st.secrets.get("PORT")
+        if not dbname or not user or not password or not host or not port:
+            raise RuntimeError("Database credentials are not loaded.")
+        engine = psycopg2.connect(dbname=dbname, user=user, password=password, host=host, port=port, sslmode='disable')
     except Exception as e:
-        st.error(f"Database Connection error: {e}")
+        st.error(f"Database Connection error")
     return engine
 
 # helper: previous month range
