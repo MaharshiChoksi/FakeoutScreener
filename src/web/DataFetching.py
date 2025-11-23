@@ -4,10 +4,7 @@ from datetime import datetime
 import pandas as pd
 import streamlit as st
 import pytz
-from dotenv import load_dotenv
-import os
 
-load_dotenv('.env')
 # DB engine provider (expects connection string in Streamlit secrets or env var)
 def _get_db_engine():
     try:
