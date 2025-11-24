@@ -17,7 +17,7 @@ def _get_db_engine():
             raise RuntimeError("Database credentials are not loaded.")
         engine = psycopg2.connect(dbname=dbname, user=user, password=password, host=host, port=port, sslmode='disable')
     except Exception as e:
-        st.error(f"Database Connection error")
+        st.error(f"Database Connection error: {e}")
     return engine
 
 # helper: previous month range

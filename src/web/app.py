@@ -143,7 +143,6 @@ with tab_screener:
                     curr_week_df = df.compute_curr_week_df(dailydf) # Get Current week DF
                     
                     results_df = df.find_eligible_tickers(monthly_df, prev_week_df, curr_week_df, signal_type)
-                    print(results_df)
             except Exception as e:
                 status.error(f"Data fetch/processing failed: {e}", icon="❌")
                 results_df = None
